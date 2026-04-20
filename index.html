@@ -21,35 +21,31 @@
 body {
     margin: 0;
     padding: 0;
+    background: #ffe;
     text-align: center;
-    overflow-x: hidden;
 }
 
-#wrap {
-    width: 100%;
-}
-
+/* RESPONSIVE CANVAS FIX */
 #canvas {
-    width: 100%;
-    height: auto;
+    width: 100vw;              /* full screen width */
+    height: auto;              /* maintain ratio */
+    max-width: 1100px;
 }
 
+/* TEXT FIX */
 #code {
-    font-size: 5vw; /* responsive text */
-    line-height: 1.6;
+    font-size: 4vw;
+    line-height: 1.5;
 }
 
 #clock {
-    font-size: 4vw;
+    font-size: 3.5vw;
 }
 
+/* DESKTOP OVERRIDE */
 @media (min-width: 768px) {
-    #code {
-        font-size: 20px;
-    }
-    #clock {
-        font-size: 16px;
-    }
+    #code { font-size: 20px; }
+    #clock { font-size: 16px; }
 }
 </style>
 
@@ -67,8 +63,6 @@ function playAudio() {
     <source src="aud.mp3" type="audio/mp3">
 </audio>
 
-<div id="wrap">
-
 <div id="text">
 <div id="code">
 <span>My beautiful wife 💞</span><br>
@@ -85,54 +79,48 @@ function playAudio() {
 <span id="clock">577 days 0 hours 0 minutes 0 seconds</span>
 </div>
 
-<canvas id="canvas"></canvas>
-
-</div>
+<!-- IMPORTANT: KEEP ORIGINAL SIZE -->
+<canvas id="canvas" width="1100" height="680"></canvas>
 
 <script>
 (function() {
 
-    var canvas = $('#canvas')[0];
-    var ctx = canvas.getContext("2d");
+    var canvas = $('#canvas');
 
-    function resizeCanvas() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight * 0.8;
-    }
+    if (!canvas[0].getContext) return;
 
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
-
-    var width = canvas.width;
-    var height = canvas.height;
+    var width = 1100;   // KEEP ORIGINAL
+    var height = 680;   // KEEP ORIGINAL
 
     var opts = {
         seed: {
-            x: width / 2,
+            x: width / 2 - 20,
             color: "rgb(190, 26, 37)",
             scale: 2
         },
         branch: [
-            [width/2, height, width/2+35, height/3, width/2-35, height/3, 30, 100]
+            [535, 680, 570, 250, 500, 200, 30, 100, [
+                [540, 500, 455, 417, 340, 400, 13, 100],
+                [550, 445, 600, 356, 680, 345, 12, 100]
+            ]]
         ],
         bloom: {
-            num: 400,
-            width: width,
-            height: height,
+            num: 600
         },
         footer: {
-            width: width,
+            width: 1200,
             height: 5,
             speed: 10,
         }
     };
 
-    var tree = new Tree(canvas, width, height, opts);
+    var tree = new Tree(canvas[0], width, height, opts);
     var seed = tree.seed;
     var foot = tree.footer;
     var hold = 1;
 
-    $('#canvas').click(function() {
+    /* MOBILE TOUCH FIX */
+    canvas.on("click touchstart", function() {
         playAudio();
         hold = 0;
     });
