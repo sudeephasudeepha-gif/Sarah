@@ -358,16 +358,20 @@ createBloom: function(width, height, radius, figure, color, alpha, angle, scale,
         canFlower: function() {
             return !!this.blooms.length;
         }, 
-        flower: function(num) {
-            var s = this, blooms = s.bloomsCache.splice(0, num);
-            for (var i = 0; i < blooms.length; i++) {
-                s.addBloom(blooms[i]);
-            }
-            blooms = s.blooms;
-            for (var j = 0; j < blooms.length; j++) {
-                blooms[j].flower();
-            }
-        },
+flower: function() {
+    var s = this;
+
+    // HEARTBEAT (pulse effect)
+    var pulse = 1 + 0.1 * Math.sin(Date.now() / 200);
+
+    s.draw(pulse);
+
+    s.scale += 0.06;
+
+    if (s.scale > 1) {
+        s.tree.removeBloom(s);
+    }
+},,
 
         snapshot: function(k, x, y, width, height) {
             var ctx = this.ctx;
@@ -453,20 +457,37 @@ createBloom: function(width, height, radius, figure, color, alpha, angle, scale,
                 s.tree.addBranchs(s.branchs);
             }
         },
-        draw: function(p) {
-            var s = this;
-            var ctx = s.tree.ctx;
-            ctx.save();
-        	ctx.beginPath();
-        	ctx.fillStyle = '#FFC0CB';
-            // ctx.shadowColor = 'rgb(35, 31, 32)';
-            ctx.shadowBlur = 2;
-        	ctx.moveTo(p.x, p.y);
-        	ctx.arc(p.x, p.y, s.radius, 0, 2 * Math.PI);
-        	ctx.closePath();
-        	ctx.fill();
-        	// ctx.restore();
-        }
+draw: function(pulse) {
+    var s = this, ctx = s.tree.ctx, figure = s.figure;
+
+    pulse = pulse || 1;
+
+    ctx.save();
+
+    // ✨ GLOW EFFECT
+    ctx.shadowColor = s.color;
+    ctx.shadowBlur = 20;
+
+    ctx.fillStyle = s.color;
+    ctx.globalAlpha = s.alpha;
+
+    ctx.translate(s.point.x, s.point.y);
+    ctx.scale(s.scale * pulse, s.scale * pulse);
+    ctx.rotate(s.angle);
+
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+
+    for (var i = 0; i < figure.length; i++) {
+        var p = figure.get(i);
+        ctx.lineTo(p.x, -p.y);
+    }
+
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.restore();
+},
     }
 
     Bloom = function(tree, point, figure, color, alpha, angle, scale, place, speed) {
