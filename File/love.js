@@ -141,8 +141,6 @@
             var point = cirle.point, color = cirle.color, 
                 scale = cirle.scale, radius = cirle.radius;
             ctx.save();
-            ctx.shadowColor = "red";
-ctx.shadowBlur = 20;
             ctx.fillStyle = color;
             ctx.translate(point.x, point.y);
             ctx.scale(scale, scale);
@@ -169,7 +167,7 @@ ctx.shadowBlur = 20;
 
             ctx.moveTo(0, 0);
             ctx.scale(0.75, 0.75);
-            ctx.font = "16px,Verdana"; // 字号肿么没有用? (ˉ(∞)ˉ)
+            ctx.font = "12px,Verdana"; // 字号肿么没有用? (ˉ(∞)ˉ)
             ctx.fillText("Click Me:) ", 30, -5);
             ctx.fillText("Birthday Queen !", 28, 10);
             ctx.restore();
@@ -345,35 +343,30 @@ ctx.shadowBlur = 20;
             }
         },
 
-
-createBloom: function(width, height, radius, figure, color, alpha, angle, scale, place, speed) {
-    var x, y;
-    while (true) {
-        x = random(20, width - 20);
-        y = random(20, height - 20);
-        if (inheart(x - width / 2, y - height / 2, radius)) {
-            return new Bloom(this, new Point(x, y), figure, color, alpha, angle, scale, place, speed);
-        }
-    }
-},,
+        createBloom: function(width, height, radius, figure, color, alpha, angle, scale, place, speed) {
+            var x, y;
+            while (true) {
+                x = random(20, width - 20);
+                y = random(20, height - 20);
+                if (inheart(x - width / 2, height - (height - 40) / 2 - y, radius)) {
+                    return new Bloom(this, new Point(x, y), figure, color, alpha, angle, scale, place, speed);
+                }
+            }
+        },
         
         canFlower: function() {
             return !!this.blooms.length;
         }, 
-flower: function() {
-    var s = this;
-
-    // HEARTBEAT (pulse effect)
-    var pulse = 1 + 0.1 * Math.sin(Date.now() / 200);
-
-    s.draw(pulse);
-
-    s.scale += 0.06;
-
-    if (s.scale > 1) {
-        s.tree.removeBloom(s);
-    }
-},,
+        flower: function(num) {
+            var s = this, blooms = s.bloomsCache.splice(0, num);
+            for (var i = 0; i < blooms.length; i++) {
+                s.addBloom(blooms[i]);
+            }
+            blooms = s.blooms;
+            for (var j = 0; j < blooms.length; j++) {
+                blooms[j].flower();
+            }
+        },
 
         snapshot: function(k, x, y, width, height) {
             var ctx = this.ctx;
@@ -426,7 +419,7 @@ flower: function() {
                     width = bloom.width || this.width,
                     height = bloom.height || this.height,
                     figure = this.seed.heart.figure;
-                var r = 200, x, y;
+                var r = 240, x, y;
                 for (var i = 0; i < random(1,2); i++) {
                     blooms.push(this.createBloom(width / 2 + width, height, r, figure, null, 1, null, 1, new Point(random(-100,600), 720), random(200,300)));
                 }
@@ -459,37 +452,20 @@ flower: function() {
                 s.tree.addBranchs(s.branchs);
             }
         },
-draw: function(pulse) {
-    var s = this, ctx = s.tree.ctx, figure = s.figure;
-
-    pulse = pulse || 1;
-
-    ctx.save();
-
-    // ✨ GLOW EFFECT
-    ctx.shadowColor = s.color;
-    ctx.shadowBlur = 20;
-
-    ctx.fillStyle = s.color;
-    ctx.globalAlpha = s.alpha;
-
-    ctx.translate(s.point.x, s.point.y);
-    ctx.scale(s.scale * pulse, s.scale * pulse);
-    ctx.rotate(s.angle);
-
-    ctx.beginPath();
-    ctx.moveTo(0, 0);
-
-    for (var i = 0; i < figure.length; i++) {
-        var p = figure.get(i);
-        ctx.lineTo(p.x, -p.y);
-    }
-
-    ctx.closePath();
-    ctx.fill();
-
-    ctx.restore();
-},
+        draw: function(p) {
+            var s = this;
+            var ctx = s.tree.ctx;
+            ctx.save();
+        	ctx.beginPath();
+        	ctx.fillStyle = '#FFC0CB';
+            // ctx.shadowColor = 'rgb(35, 31, 32)';
+            ctx.shadowBlur = 2;
+        	ctx.moveTo(p.x, p.y);
+        	ctx.arc(p.x, p.y, s.radius, 0, 2 * Math.PI);
+        	ctx.closePath();
+        	ctx.fill();
+        	// ctx.restore();
+        }
     }
 
     Bloom = function(tree, point, figure, color, alpha, angle, scale, place, speed) {
