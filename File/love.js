@@ -349,7 +349,7 @@ createBloom: function(width, height, radius, figure, color, alpha, angle, scale,
     while (true) {
         x = random(20, width - 20);
         y = random(20, height - 20);
-        if (inheart(x - width / 2, height - (height - 40) / 2 - y, radius)) {
+        if (inheart(x - width / 2, y - height / 2, radius)) {
             return new Bloom(this, new Point(x, y), figure, color, alpha, angle, scale, place, speed);
         }
     }
