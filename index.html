@@ -1,210 +1,121 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>HBD love</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HBD Love</title>
 
-    <!-- Mobile responsive -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body {
+    margin: 0;
+    background: #0b1a3a;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+    color: white;
+    text-align: center;
+}
 
-    <link rel="stylesheet" href="./File/default.css">
+#text {
+    position: absolute;
+    top: 10%;
+    width: 100%;
+    font-size: 20px;
+    display: none;
+}
 
-    <script src="./File/jquery.min.js"></script>
-    <script src="./File/jscex.min.js"></script>
-    <script src="./File/jscex-parser.js"></script>
-    <script src="./File/jscex-jit.js"></script>
-    <script src="./File/jscex-builderbase.min.js"></script>
-    <script src="./File/jscex-async.min.js"></script>
-    <script src="./File/jscex-async-powerpack.min.js"></script>
-    <script src="./File/functions.js"></script>
-    <script src="./File/love.js"></script>
+canvas {
+    display: block;
+}
 
-    <script>
-        function playAudio() {
-            var audio = document.getElementById("myAudio");
-            audio.play();
-        }
-    </script>
+#tap {
+    position: absolute;
+    bottom: 20px;
+    width: 100%;
+    font-size: 18px;
+    opacity: 0.7;
+}
+</style>
 </head>
 
 <body>
-<div id="main">
 
-    <!-- Audio (no autoplay for mobile) -->
-    <audio id="myAudio">
-        <source src="aud.mp3" type="audio/mp3" />
-    </audio>
-
-    <div id="wrap">
-        <div id="text">
-            <div id="code">
-                <span class="say">My beautiful wife 💞</span><br>
-                <span class="say">Happy Birthday 🎈</span><br>
-                <span class="say">May Allah bless you 🍀</span><br>
-                <span class="say">And give u many happiness 💕</span><br>
-                <span class="say">I loved you ❤️</span><br>
-                <span class="say">And I will always love u 🥺 ❤️</span><br>
-                <span class="say">Hope u have a great day today ❤️😘</span><br>
-            </div>
-        </div>
-
-        <div id="clock-box">
-            <span id="clock">577 days 0 hours 0 minutes 0 seconds</span>
-        </div>
-
-        <!-- Responsive canvas -->
-        <canvas id="canvas"></canvas>
-    </div>
+<div id="text">
+    <p>My beautiful wife 💞</p>
+    <p>Happy Birthday 🎈</p>
+    <p>May Allah bless you 🍀</p>
+    <p>And give u many happiness 💕</p>
+    <p>I love you ❤️</p>
+    <p>I will always love you 🥺❤️</p>
 </div>
 
-<script>
-(function () {
-    var canvas = $('#canvas');
+<div id="tap">👉 Tap anywhere to start</div>
 
-    if (!canvas[0].getContext) {
-        return false;
+<canvas id="canvas"></canvas>
+
+<audio id="music">
+    <source src="aud.mp3" type="audio/mp3">
+</audio>
+
+<script>
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let started = false;
+let hearts = [];
+
+function createHeart(x, y) {
+    return {
+        x: x,
+        y: y,
+        size: Math.random() * 8 + 4,
+        speed: Math.random() * 1 + 0.5
+    };
+}
+
+function drawHeart(h) {
+    ctx.fillStyle = "pink";
+    ctx.beginPath();
+    ctx.moveTo(h.x, h.y);
+    ctx.arc(h.x - h.size/2, h.y - h.size/2, h.size/2, 0, Math.PI, true);
+    ctx.arc(h.x + h.size/2, h.y - h.size/2, h.size/2, 0, Math.PI, true);
+    ctx.lineTo(h.x, h.y + h.size);
+    ctx.fill();
+}
+
+function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // create hearts
+    if (Math.random() < 0.3) {
+        hearts.push(createHeart(Math.random() * canvas.width, canvas.height));
     }
 
-    // ✅ Responsive canvas
-    var width = window.innerWidth;
-    var height = window.innerHeight;
-
-    canvas.attr("width", width);
-    canvas.attr("height", height);
-
-    var opts = {
-        seed: {
-            x: width / 2 - 20,
-            color: "rgb(190, 26, 37)",
-            scale: 2
-        },
-        branch: [
-            [535, 680, 570, 250, 500, 200, 30, 100, [
-                [540, 500, 455, 417, 340, 400, 13, 100, [
-                    [450, 435, 434, 430, 394, 395, 2, 40]
-                ]],
-                [550, 445, 600, 356, 680, 345, 12, 100, [
-                    [578, 400, 648, 409, 661, 426, 3, 80]
-                ]],
-                [539, 281, 537, 248, 534, 217, 3, 40],
-                [546, 397, 413, 247, 328, 244, 9, 80, [
-                    [427, 286, 383, 253, 371, 205, 2, 40],
-                    [498, 345, 435, 315, 395, 330, 4, 60]
-                ]],
-                [546, 357, 608, 252, 678, 221, 6, 100, [
-                    [590, 293, 646, 277, 648, 271, 2, 80]
-                ]]
-            ]]
-        ],
-        bloom: {
-            num: 400, // reduced for mobile performance
-            width: width,
-            height: height,
-        },
-        footer: {
-            width: width,
-            height: 5,
-            speed: 10,
-        }
-    };
-
-    var tree = new Tree(canvas[0], width, height, opts);
-    var seed = tree.seed;
-    var foot = tree.footer;
-    var hold = 1;
-
-    // ✅ Touch + Click support
-    canvas.on("touchstart click", function (e) {
-        playAudio();
-
-        var offset = canvas.offset(), x, y;
-
-        if (e.type === "touchstart") {
-            x = e.originalEvent.touches[0].pageX - offset.left;
-            y = e.originalEvent.touches[0].pageY - offset.top;
-        } else {
-            x = e.pageX - offset.left;
-            y = e.pageY - offset.top;
-        }
-
-        if (seed.hover(x, y)) {
-            hold = 0;
-            canvas.off("touchstart click mousemove touchmove");
-        }
-    }).on("touchmove mousemove", function (e) {
-        var offset = canvas.offset(), x, y;
-
-        if (e.type === "touchmove") {
-            x = e.originalEvent.touches[0].pageX - offset.left;
-            y = e.originalEvent.touches[0].pageY - offset.top;
-        } else {
-            x = e.pageX - offset.left;
-            y = e.pageY - offset.top;
-        }
-
-        canvas.toggleClass('hand', seed.hover(x, y));
+    // update hearts
+    hearts.forEach(h => {
+        h.y -= h.speed;
+        drawHeart(h);
     });
 
-    var seedAnimate = eval(Jscex.compile("async", function () {
-        seed.draw();
-        while (hold) {
-            $await(Jscex.Async.sleep(10));
-        }
-        while (seed.canScale()) {
-            seed.scale(0.95);
-            $await(Jscex.Async.sleep(10));
-        }
-        while (seed.canMove()) {
-            seed.move(0, 2);
-            foot.draw();
-            $await(Jscex.Async.sleep(10));
-        }
-    }));
+    requestAnimationFrame(animate);
+}
 
-    var growAnimate = eval(Jscex.compile("async", function () {
-        do {
-            tree.grow();
-            $await(Jscex.Async.sleep(10));
-        } while (tree.canGrow());
-    }));
+canvas.addEventListener("click", start);
+canvas.addEventListener("touchstart", start);
 
-    var flowAnimate = eval(Jscex.compile("async", function () {
-        do {
-            tree.flower(2);
-            $await(Jscex.Async.sleep(10));
-        } while (tree.canFlower());
-    }));
+function start() {
+    if (started) return;
+    started = true;
 
-    var moveAnimate = eval(Jscex.compile("async", function () {
-        tree.snapshot("p1", 240, 0, 610, height);
-        while (tree.move("p1", 500, 0)) {
-            foot.draw();
-            $await(Jscex.Async.sleep(10));
-        }
-        foot.draw();
-        tree.snapshot("p2", 500, 0, 610, height);
+    document.getElementById("tap").style.display = "none";
+    document.getElementById("text").style.display = "block";
 
-        canvas.parent().css("background", "url(" + tree.toDataURL('image/png') + ")");
-        canvas.css("background", "#ffe");
-        $await(Jscex.Async.sleep(300));
-        canvas.css("background", "none");
-    }));
+    document.getElementById("music").play();
 
-    var textAnimate = eval(Jscex.compile("async", function () {
-        $("#code").show().typewriter();
-    }));
-
-    var runAsync = eval(Jscex.compile("async", function () {
-        $await(seedAnimate());
-        $await(growAnimate());
-        $await(flowAnimate());
-        $await(moveAnimate());
-        textAnimate().start();
-    }));
-
-    runAsync().start();
-
-})();
+    animate();
+}
 </script>
 
 </body>
