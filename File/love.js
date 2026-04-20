@@ -343,30 +343,17 @@
             }
         },
 
+
 createBloom: function(width, height, radius, figure, color, alpha, angle, scale, place, speed) {
-    var t = Math.random() * Math.PI * 2;
-
-    // PERFECT HEART EQUATION
-    var x = 16 * Math.pow(Math.sin(t), 3);
-    var y = 13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t);
-
-    // CENTER + SCALE
-    var scaleFactor = 12;   // adjust size
-    x = width / 2 + x * scaleFactor;
-    y = height / 2 - y * scaleFactor;
-
-    return new Bloom(
-        this,
-        new Point(x, y),
-        figure,
-        color,
-        alpha,
-        angle,
-        0.3,   // smaller initial size
-        place,
-        speed
-    );
-},
+    var x, y;
+    while (true) {
+        x = random(20, width - 20);
+        y = random(20, height - 20);
+        if (inheart(x - width / 2, height - (height - 40) / 2 - y, radius)) {
+            return new Bloom(this, new Point(x, y), figure, color, alpha, angle, scale, place, speed);
+        }
+    }
+},,
         
         canFlower: function() {
             return !!this.blooms.length;
@@ -433,7 +420,7 @@ createBloom: function(width, height, radius, figure, color, alpha, angle, scale,
                     width = bloom.width || this.width,
                     height = bloom.height || this.height,
                     figure = this.seed.heart.figure;
-                var r = 240, x, y;
+                var r = 200, x, y;
                 for (var i = 0; i < random(1,2); i++) {
                     blooms.push(this.createBloom(width / 2 + width, height, r, figure, null, 1, null, 1, new Point(random(-100,600), 720), random(200,300)));
                 }
