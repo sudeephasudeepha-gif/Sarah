@@ -12,8 +12,8 @@ function bezier(cp, t) {
 }  
 
 function inheart(x, y, r) {
-    var z = ((x/r)*(x/r)+(y/r)*(y/r)-1)**3 - (x/r)*(x/r)*(y/r)*(y/r)*(y/r);
-    return z < 0;
+    var z = ((x / r)*(x / r) + (y / r)*(y / r) - 1);
+    return z*z*z - (x/r)*(x/r)*(y/r)*(y/r)*(y/r) < 0;
 }
 
 Point = function(x, y) {
@@ -43,80 +43,7 @@ Heart.prototype = {
     get:function(i,scale){ return this.points[i].mul(scale||1); }
 }
 
-Seed = function(tree, point, scale, color) {
-    this.tree = tree;
-    this.heart = { point: point, scale: scale||1, color: color||'#FFC0CB', figure: new Heart() };
-    this.cirle = { point: point, scale: scale||1, color: color||'#FFC0CB', radius:5 };
-}
-
-Seed.prototype = {
-    draw:function(){ this.drawHeart(); this.drawText(); },
-    addPosition:function(x,y){ this.cirle.point=this.cirle.point.add(new Point(x,y)); },
-    canMove:function(){ return this.cirle.point.y < (this.tree.height+20); },
-    move:function(x,y){ this.clear(); this.drawCirle(); this.addPosition(x,y); },
-    canScale:function(){ return this.heart.scale>0.2; },
-    scale:function(s){ this.clear(); this.drawCirle(); this.drawHeart(); this.heart.scale*=s; },
-
-    drawHeart:function(){
-        var ctx=this.tree.ctx,h=this.heart;
-        ctx.save();
-        ctx.fillStyle=h.color;
-        ctx.translate(h.point.x,h.point.y);
-        ctx.beginPath();
-        for(var i=0;i<h.figure.length;i++){
-            var p=h.figure.get(i,h.scale);
-            ctx.lineTo(p.x,-p.y);
-        }
-        ctx.closePath(); ctx.fill(); ctx.restore();
-    },
-
-    drawCirle:function(){
-        var ctx=this.tree.ctx,c=this.cirle;
-        ctx.save();
-        ctx.fillStyle=c.color;
-        ctx.translate(c.point.x,c.point.y);
-        ctx.beginPath();
-        ctx.arc(0,0,c.radius,0,2*Math.PI);
-        ctx.fill(); ctx.restore();
-    },
-
-    drawText:function(){
-        var ctx=this.tree.ctx,h=this.heart;
-        ctx.save();
-        ctx.fillStyle=h.color;
-        ctx.translate(h.point.x,h.point.y);
-        ctx.scale(h.scale,h.scale);
-        ctx.font="12px Verdana";
-        ctx.fillText("Click Me :) ",30,-5);
-        ctx.fillText("Birthday Queen!",28,10);
-        ctx.restore();
-    },
-
-    clear:function(){
-        var ctx=this.tree.ctx,c=this.cirle;
-        ctx.clearRect(c.point.x-30,c.point.y-30,60,60);
-    }
-}
-
-Footer = function(tree,width,height,speed){
-    this.tree=tree;
-    this.point=new Point(tree.seed.heart.point.x,tree.height-height/2);
-    this.width=width; this.height=height; this.speed=speed||2; this.length=0;
-}
-Footer.prototype={
-    draw:function(){
-        var ctx=this.tree.ctx,p=this.point,len=this.length/2;
-        ctx.save();
-        ctx.strokeStyle='#FFF';
-        ctx.lineWidth=this.height;
-        ctx.lineCap='round';
-        ctx.translate(p.x,p.y);
-        ctx.beginPath();
-        ctx.moveTo(-len,0); ctx.lineTo(len,0);
-        ctx.stroke(); ctx.restore();
-        if(this.length<this.width) this.length+=this.speed;
-    }
-}
+/* ---------------- TREE ---------------- */
 
 Tree = function(canvas,width,height,opt){
     this.canvas=canvas;
@@ -124,6 +51,9 @@ Tree = function(canvas,width,height,opt){
     this.width=width;
     this.height=height;
     this.opt=opt||{};
+    this.branchs=[];
+    this.blooms=[];
+    this.bloomsCache=[];
     this.initSeed();
     this.initFooter();
     this.initBranch();
@@ -134,48 +64,25 @@ Tree.prototype = {
 
 initSeed:function(){
     var s=this.opt.seed||{};
-    this.seed=new Seed(this,new Point(s.x||this.width/2,s.y||this.height/2),s.scale,s.color);
+    this.seed={ heart:{point:new Point(s.x||this.width/2,s.y||this.height/2)} };
 },
 
 initFooter:function(){
-    var f=this.opt.footer||{};
-    this.footer=new Footer(this,f.width||this.width,f.height||5,f.speed||2);
+    this.footer={ draw:function(){} };
 },
 
 initBranch:function(){
-    this.branchs=[];
-    this.addBranchs(this.opt.branch||[]);
+    var b=this.opt.branch||[];
+    for(var i=0;i<b.length;i++){
+        this.branchs.push(new Branch(this,new Point(b[i][0],b[i][1]),
+        new Point(b[i][2],b[i][3]),new Point(b[i][4],b[i][5]),b[i][6],b[i][7]));
+    }
 },
 
 initBloom:function(){
-    var b=this.opt.bloom||{},cache=[];
-    for(var i=0;i<(b.num||500);i++){
-        cache.push(this.createBloom(this.width,this.height,240,this.seed.heart.figure));
+    for(var i=0;i<700;i++){
+        this.bloomsCache.push(this.createBloom(this.width,this.height,240,new Heart()));
     }
-    this.blooms=[];
-    this.bloomsCache=cache;
-},
-
-addBranchs:function(arr){
-    for(var i=0;i<arr.length;i++){
-        var b=arr[i];
-        this.branchs.push(new Branch(this,new Point(b[0],b[1]),new Point(b[2],b[3]),new Point(b[4],b[5]),b[6],b[7]));
-    }
-},
-
-grow:function(){ this.branchs.forEach(b=>b.grow()); },
-
-flower:function(num){
-    var newBlooms=this.bloomsCache.splice(0,num);
-    this.blooms.push(...newBlooms);
-
-    this.blooms.forEach(b=>{
-        if(!b.falling){
-            b.flower();
-        } else {
-            b.jump();
-        }
-    });
 },
 
 createBloom:function(width,height,r,figure){
@@ -187,13 +94,45 @@ createBloom:function(width,height,r,figure){
             return new Bloom(this,new Point(x,y),figure);
         }
     }
+},
+
+canGrow:function(){ return this.branchs.length>0; },
+
+grow:function(){
+    for(var i=0;i<this.branchs.length;i++){
+        this.branchs[i].grow();
+    }
+},
+
+canFlower:function(){
+    return this.bloomsCache.length>0 || this.blooms.length>0;
+},
+
+flower:function(num){
+    var newBlooms=this.bloomsCache.splice(0,num);
+    this.blooms.push.apply(this.blooms,newBlooms);
+
+    for(var i=0;i<this.blooms.length;i++){
+        var b=this.blooms[i];
+        if(!b.falling){
+            b.flower();
+        } else {
+            b.jump();
+        }
+    }
 }
 
 }
+
+/* ---------------- BRANCH ---------------- */
 
 Branch = function(tree,p1,p2,p3,r,l){
-    this.tree=tree; this.p1=p1; this.p2=p2; this.p3=p3;
-    this.radius=r; this.length=l||100; this.len=0; this.t=1/(this.length-1);
+    this.tree=tree;
+    this.p1=p1; this.p2=p2; this.p3=p3;
+    this.radius=r;
+    this.length=l||100;
+    this.len=0;
+    this.t=1/(this.length-1);
 }
 
 Branch.prototype={
@@ -205,12 +144,13 @@ Branch.prototype={
             ctx.fillStyle='#FFC0CB';
             ctx.arc(p.x,p.y,this.radius,0,2*Math.PI);
             ctx.fill();
-            this.len++; this.radius*=0.97;
+            this.len++;
+            this.radius*=0.97;
         }
     }
 }
 
-/* 🌸 BLOOM (UPDATED FALLING PETALS) */
+/* ---------------- BLOOM (FALLING PETALS) ---------------- */
 
 Bloom = function(tree,point,figure){
     this.tree=tree;
@@ -220,21 +160,19 @@ Bloom = function(tree,point,figure){
     this.alpha=1;
     this.angle=random(0,360);
     this.scale=0.1;
-    this.falling=false;
+    this.falling=false;   // ⭐ important
 }
 
 Bloom.prototype={
 
-flower:function(){
+draw:function(){
     var ctx=this.tree.ctx;
-
     ctx.save();
     ctx.globalAlpha=this.alpha;
     ctx.fillStyle=this.color;
     ctx.translate(this.point.x,this.point.y);
     ctx.scale(this.scale,this.scale);
     ctx.rotate(this.angle);
-
     ctx.beginPath();
     for(var i=0;i<this.figure.length;i++){
         var p=this.figure.get(i);
@@ -243,35 +181,22 @@ flower:function(){
     ctx.closePath();
     ctx.fill();
     ctx.restore();
+},
 
-    this.scale+=0.05;
+flower:function(){
+    this.draw();
+    this.scale += 0.05;
 
-    // start falling after bloom
-    if(this.scale>1){
-        this.falling=true;
+    // start falling after full bloom
+    if(this.scale > 1){
+        this.falling = true;
     }
 },
 
 jump:function(){
-    var ctx=this.tree.ctx;
+    this.draw();
 
-    ctx.save();
-    ctx.globalAlpha=this.alpha;
-    ctx.fillStyle=this.color;
-    ctx.translate(this.point.x,this.point.y);
-    ctx.scale(1,1);
-    ctx.rotate(this.angle);
-
-    ctx.beginPath();
-    for(var i=0;i<this.figure.length;i++){
-        var p=this.figure.get(i);
-        ctx.lineTo(p.x,-p.y);
-    }
-    ctx.closePath();
-    ctx.fill();
-    ctx.restore();
-
-    // 🌸 FALL DOWN
+    // 🌸 FALL
     this.point.y += 1.5 + Math.random();
 
     // 🌬️ SWAY
@@ -285,7 +210,8 @@ jump:function(){
 
     // REMOVE
     if(this.point.y > this.tree.height || this.alpha <= 0){
-        this.tree.blooms.splice(this.tree.blooms.indexOf(this),1);
+        var i = this.tree.blooms.indexOf(this);
+        if(i > -1) this.tree.blooms.splice(i,1);
     }
 }
 
