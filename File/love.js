@@ -1,8 +1,17 @@
 ﻿(function(window){
 
     function random(min, max) {
+       
         return min + Math.floor(Math.random() * (max - min + 1));
     }
+
+     function resizeCanvas() {
+    const canvas = document.getElementById("canvas");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+window.addEventListener("resize", resizeCanvas);
+resizeCanvas();
 
     function bezier(cp, t) {  
         var p1 = cp[0].mul((1 - t) * (1 - t));
