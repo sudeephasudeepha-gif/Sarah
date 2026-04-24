@@ -419,7 +419,7 @@
                     width = bloom.width || this.width,
                     height = bloom.height || this.height,
                     figure = this.seed.heart.figure;
-                var r = 240, x, y;
+                var r = 160, x, y;
                 for (var i = 0; i < random(1,2); i++) {
                     blooms.push(this.createBloom(width / 2 + width, height, r, figure, null, 1, null, 1, new Point(random(-100,600), 720), random(200,300)));
                 }
@@ -474,7 +474,7 @@
         this.color = color || 'rgb(255,' + random(0, 255) + ',' + random(0, 255) + ')';
         this.alpha = alpha || random(0.3, 1);
         this.angle = angle || random(0, 360);
-        this.scale = scale || 0.1;
+        this.scale = scale || 0.03;
         this.place = place;
         this.speed = speed;
 
@@ -487,8 +487,8 @@
         flower: function() {
             var s = this;
             s.draw();
-            s.scale += 0.1;
-            if (s.scale > 1) {
+            s.scale += 0.03;
+            if (s.scale > 0.4) {
                 s.tree.removeBloom(s);
             }
         },
