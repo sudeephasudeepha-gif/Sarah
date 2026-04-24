@@ -4,24 +4,6 @@
         return min + Math.floor(Math.random() * (max - min + 1));
     }
 
-     const canvas = document.getElementById("canvas");
-
-function resizeCanvas() {
-    const dpr = window.devicePixelRatio || 1;
-
-    canvas.width = window.innerWidth * dpr;
-    canvas.height = window.innerHeight * dpr;
-
-    canvas.style.width = window.innerWidth + "px";
-    canvas.style.height = window.innerHeight + "px";
-
-    const ctx = canvas.getContext("2d");
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-}
-
-window.addEventListener("resize", resizeCanvas);
-resizeCanvas();
-
     function bezier(cp, t) {  
         var p1 = cp[0].mul((1 - t) * (1 - t));
         var p2 = cp[1].mul(2 * t * (1 - t));
@@ -252,8 +234,8 @@ resizeCanvas();
     Tree.prototype = {
         initSeed: function() {
             var seed = this.opt.seed || {};
-var x = this.width / 2;
-var y = this.height * 0.5;
+            var x = seed.x || this.width / 2;
+            var y = seed.y || this.height / 2;
             var point = new Point(x, y);
             var color = seed.color || '#FF0000';
             var scale = seed.scale || 1;
