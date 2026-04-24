@@ -9,10 +9,7 @@ body {
   color: white;
   overflow: auto;
 }
-a {
-  color: white;
-  font-size: 14px;
-}
+
 #main {
   width: 100%;
 }
