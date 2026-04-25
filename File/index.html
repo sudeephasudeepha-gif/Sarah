@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    
+    <!-- 🔥 VERY IMPORTANT FOR MOBILE -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Love Animation</title>
+
+    <link rel="stylesheet" href="default.css">
+</head>
+
+<body>
+
+<canvas id="canvas"></canvas>
+
+<!-- Scripts (order matters) -->
+<script src="jscex.min.js"></script>
+<script src="jscex-parser.js"></script>
+<script src="love.js"></script>
+
+<script>
+    var canvas = document.getElementById("canvas");
+
+    function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+
+    resizeCanvas();
+    window.addEventListener("resize", resizeCanvas);
+
+    // Create tree
+    var tree = new Tree(canvas);
+
+    // Initial draw
+    tree.draw();
+
+    // Click / Touch support
+    function handleClick() {
+        alert("❤️ Happy Birthday Queen ❤️");
+    }
+
+    canvas.addEventListener("click", handleClick);
+    canvas.addEventListener("touchstart", handleClick);
+</script>
+
+</body>
+</html>
