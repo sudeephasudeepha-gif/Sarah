@@ -23,7 +23,7 @@ html, body {
 
     width: 100%;
     max-width: 900px;
-    aspect-ratio: 16 / 9;
+    aspect-ratio: 9 / 16;
 
     background-image: url('../img2.png');
     background-size: cover;
@@ -44,10 +44,11 @@ html, body {
 #text {
     position: absolute;
     top: 15%;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 80%;
-    text-align: center;
+    left: 5%;           /* always left */
+    width: 40%;         /* adjust as needed */
+    text-align: left;   /* text aligned left */
+
+    transform: none;    /* remove centering */
 }
 
 /* MESSAGE TEXT */
