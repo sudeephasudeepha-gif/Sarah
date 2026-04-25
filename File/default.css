@@ -47,7 +47,7 @@ html, body {
   left: 50%;
   transform: translateX(-50%);
   width: 80%;
-  text-align: center;
+  text-align: left;
 }
 
 /* MESSAGE TEXT */
@@ -83,7 +83,7 @@ html, body {
   position: absolute;
   bottom: 5%;
   width: 100%;
-  text-align: center;
+  text-align: left;
   font-size: clamp(14px, 3vw, 24px);
 }
 
