@@ -23,7 +23,7 @@ html, body {
 
     width: 100%;
     max-width: 900px;
-    aspect-ratio: 21/9;
+    aspect-ratio: 4/3;
 
     background-image: url('../img2.png');
     background-size: cover;
