@@ -2,48 +2,110 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    
-    <!-- 🔥 VERY IMPORTANT FOR MOBILE -->
+
+    <!-- IMPORTANT for mobile scaling -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Love Animation</title>
+    <title>Love Heart Animation</title>
 
+    <!-- CSS -->
     <link rel="stylesheet" href="default.css">
+
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #000;
+        }
+
+        canvas {
+            display: block;
+        }
+    </style>
 </head>
 
 <body>
 
 <canvas id="canvas"></canvas>
 
-<!-- Scripts (order matters) -->
+<!-- JS FILES (ORDER IS VERY IMPORTANT) -->
+<script src="jquery.min.js"></script>
+
 <script src="jscex.min.js"></script>
 <script src="jscex-parser.js"></script>
+<script src="jscex-jit.js"></script>
+<script src="jscex-builderbase.min.js"></script>
+<script src="jscex-async.min.js"></script>
+<script src="jscex-async-powerpack.min.js"></script>
+
+<script src="functions.js"></script>
 <script src="love.js"></script>
 
 <script>
-    var canvas = document.getElementById("canvas");
-
+    // Responsive canvas setup
     function resizeCanvas() {
+        const canvas = document.getElementById("canvas");
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
     }
 
-    resizeCanvas();
     window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
 
-    // Create tree
-    var tree = new Tree(canvas);
+    // Start animation after load
+    window.onload = function () {
+        const canvas = document.getElementById("canvas");
 
-    // Initial draw
-    tree.draw();
+        if (!canvas.getContext) {
+            alert("Your browser does not support canvas");
+            return;
+        }
 
-    // Click / Touch support
-    function handleClick() {
-        alert("❤️ Happy Birthday Queen ❤️");
-    }
+        const width = canvas.width;
+        const height = canvas.height;
 
-    canvas.addEventListener("click", handleClick);
-    canvas.addEventListener("touchstart", handleClick);
+        const tree = new Tree(canvas, width, height, {
+            seed: {
+                x: width / 2,
+                y: height / 2,
+                color: "#FF69B4",
+                scale: 2
+            },
+            branch: [],
+            bloom: {
+                num: 500
+            },
+            footer: {
+                width: width,
+                height: 5,
+                speed: 2
+            }
+        });
+
+        const ctx = canvas.getContext("2d");
+
+        // Animation loop
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+
+            tree.seed.draw();
+
+            if (tree.canGrow()) {
+                tree.grow();
+            }
+
+            if (tree.canFlower()) {
+                tree.flower(2);
+            }
+
+            tree.footer.draw();
+
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    };
 </script>
 
 </body>
