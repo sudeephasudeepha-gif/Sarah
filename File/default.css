@@ -55,10 +55,11 @@ html, body {
 #code {
     display: none;
     color: rgb(196, 255, 255);
-    font-size: clamp(14px, 2vw, 20px);
+    font-size: clamp(18px, 2.5vw, 26px);
     margin-top: 50px;
-    line-height: 1.6;
-    font-weight: bold;
+    line-height: 1.8;
+    font-weight: 600;
+    text-align: left;
 }
 
 /* CLOCK (RESPONSIVE POSITION) */
