@@ -511,18 +511,24 @@
             ctx.fill();
             ctx.restore();
         },
-        jump: function() {
-            var s = this, height = s.tree.height;
+    jump: function() {
+    var s = this, height = s.tree.height;
 
-            if (s.point.x < -20 || s.point.y > height + 20) {
-                s.tree.removeBloom(s);
-            } else {
-                s.draw();
-                s.point = s.place.sub(s.point).div(s.speed).add(s.point);
-                s.angle += 0.05;
-                s.speed -= 1;
-            }
-        }
+    if (s.point.y > height + 20) {
+        s.tree.removeBloom(s);
+    } else {
+        s.draw();
+
+        // falling down
+        s.point.y += 2 + Math.random() * 2;
+
+        // slight left-right sway (wind effect)
+        s.point.x += Math.sin(s.angle) * 1.5;
+
+        // rotation
+        s.angle += 0.05;
+    }
+  }
     }
 
     window.random = random;
