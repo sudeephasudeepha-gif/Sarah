@@ -238,7 +238,7 @@
             var y = seed.y || this.height / 2;
             var point = new Point(x, y);
             var color = seed.color || '#FF0000';
-            var scale = seed.scale || 1;
+            var scale = seed.scale || 0.8;
 
             this.seed = new Seed(this, point, scale, color);
         },
@@ -474,7 +474,7 @@
         this.color = color || 'rgb(255,' + random(0, 255) + ',' + random(0, 255) + ')';
         this.alpha = alpha || random(0.3, 1);
         this.angle = angle || random(0, 360);
-        this.scale = scale || 0.1;
+        this.scale = scale || 0.05;
         this.place = place;
         this.speed = speed;
 
@@ -511,24 +511,22 @@
             ctx.fill();
             ctx.restore();
         },
-    jump: function() {
+  jump: function() {
     var s = this, height = s.tree.height;
 
+    // remove when out of screen
     if (s.point.y > height + 20) {
         s.tree.removeBloom(s);
     } else {
         s.draw();
 
-        // falling down
-        s.point.y += 2 + Math.random() * 2;
+        // move straight down
+        s.point.y += 2;  
 
-        // slight left-right sway (wind effect)
-        s.point.x += Math.sin(s.angle) * 1.5;
-
-        // rotation
-        s.angle += 0.05;
+        // optional: very slight rotation (can remove if you want)
+        s.angle += 0.02;
     }
-  }
+}
     }
 
     window.random = random;
