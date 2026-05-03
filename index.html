@@ -13,42 +13,35 @@
     <script type="text/javascript" src="./File/jscex-async-powerpack.min.js"></script>
     <script type="text/javascript" src="./File/functions.js" charset="utf-8"></script>
     <script type="text/javascript" src="./File/love.js" charset="utf-8"></script>
-
-    <script>
-        function playAudio() {
-            var audio = document.getElementById("myAudio");
-            audio.play();
-        }
-    </script>
 </head>
 
 <body>
-    <div id="main">
-        <div id="error"><a href="#">Use Chrome / Firefox / Brave</a></div>
+<div id="main">
+    <div id="error"><a href="#">Use Chrome / Firefox / Brave</a></div>
 
-        <!-- ✅ REMOVED AUTOPLAY -->
-        <audio id="myAudio">
-            <source src="aud.mp3" type="audio/mp3" />
-        </audio>
+    <!-- ✅ MOBILE SAFE AUDIO -->
+    <audio id="myAudio" preload="auto" playsinline>
+        <source src="aud.mp3" type="audio/mp3" />
+    </audio>
 
-        <div id="wrap">
-            <div id="text">
-                <div id="code">
-                    <span class="say">My dear Sarah 💞</span><br>
-                    <span class="say">Happy Birthday to You🎈</span><br>
-                    <span class="say">God bless you 👐</span><br>
-                    <span class="say">And give you lots of happiness 💞</span><br>
-                    <span class="say">I hope you have a wonderful future ahead ❣️</span><br>
-                </div>
+    <div id="wrap">
+        <div id="text">
+            <div id="code">
+                <span class="say">My dear Sarah 💞</span><br>
+                <span class="say">Happy Birthday to You🎈</span><br>
+                <span class="say">God bless you 👐</span><br>
+                <span class="say">And give you lots of happiness 💞</span><br>
+                <span class="say">I hope you have a wonderful future ahead ❣️</span><br>
             </div>
-
-            <div id="clock-box">
-                <span id="clock">577 days 0 hours 0 minutes 0 seconds</span>
-            </div>
-
-            <canvas id="canvas" width="1100" height="680"></canvas>
         </div>
+
+        <div id="clock-box">
+            <span id="clock">577 days 0 hours 0 minutes 0 seconds</span>
+        </div>
+
+        <canvas id="canvas" width="1100" height="680"></canvas>
     </div>
+</div>
 
 <script>
 (function() {
@@ -98,43 +91,47 @@
             height: 5,
             speed: 10,
         }
-    }
+    };
 
     var tree = new Tree(canvas[0], width, height, opts);
     var seed = tree.seed;
     var foot = tree.footer;
     var hold = 1;
 
-    // ✅ FIXED CLICK (only heart)
-    canvas.click(function(e) {
-        var offset = canvas.offset(), x, y;
-        x = e.pageX - offset.left;
-        y = e.pageY - offset.top;
+    var audio = document.getElementById("myAudio");
+    var started = false; // ✅ ensures single trigger
 
-        if (seed.hover(x, y)) {
-            playAudio(); // ✅ only here
+    // ✅ COMMON FUNCTION
+    function handleStart(x, y) {
+        if (seed.hover(x, y) && !started) {
+            started = true;
 
-            hold = 0; 
-            canvas.unbind("click");
-            canvas.unbind("mousemove");
-            canvas.removeClass('hand');
-        }
-    });
-
-    // 📱 MOBILE SUPPORT
-    canvas.on("touchstart", function(e) {
-        var offset = canvas.offset(), x, y;
-        x = e.originalEvent.touches[0].pageX - offset.left;
-        y = e.originalEvent.touches[0].pageY - offset.top;
-
-        if (seed.hover(x, y)) {
-            playAudio();
+            // 🔥 mobile-safe play
+            audio.currentTime = 0;
+            audio.play().catch(() => {});
 
             hold = 0;
-            canvas.unbind("click");
-            canvas.unbind("mousemove");
             canvas.removeClass('hand');
         }
+    }
+
+    // ✅ CLICK (desktop)
+    canvas.on("click", function(e) {
+        var offset = canvas.offset();
+        var x = e.pageX - offset.left;
+        var y = e.pageY - offset.top;
+        handleStart(x, y);
+    });
+
+    // ✅ TOUCH (mobile)
+    canvas.on("touchstart", function(e) {
+        var offset = canvas.offset();
+        var touch = e.originalEvent.touches[0];
+
+        var x = touch.pageX - offset.left;
+        var y = touch.pageY - offset.top;
+
+        handleStart(x, y);
     });
 
     canvas.mousemove(function(e) {
@@ -169,7 +166,7 @@
 
     var flowAnimate = eval(Jscex.compile("async", function () {
         do {
-            tree.flower(4); // 🌸 more flowers
+            tree.flower(4);
             $await(Jscex.Async.sleep(10));
         } while (tree.canFlower());
     }));
