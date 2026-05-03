@@ -17,35 +17,17 @@
 <script src="./File/functions.js"></script>
 <script src="./File/love.js"></script>
 
-<style>
-/* Optional: Play button (fallback) */
-#playBtn {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background: pink;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 20px;
-    font-size: 14px;
-    cursor: pointer;
-}
-</style>
-
 </head>
 
 <body>
 
 <div id="main">
-    <div id="error">Use Chrome / Firefox </div>
+    <div id="error">Use Chrome / Firefox</div>
 
     <!-- 🔊 AUDIO -->
     <audio id="myAudio" preload="auto" playsinline webkit-playsinline>
         <source src="./aud.mp3" type="audio/mpeg">
     </audio>
-
-    <!-- 🔊 FALLBACK BUTTON -->
-    <button id="playBtn">Play Music 🎵</button>
 
     <div id="wrap">
         <div id="text">
@@ -126,47 +108,31 @@
     var audio = document.getElementById("myAudio");
     var started = false;
 
-    // 🔥 UNLOCK AUDIO (important for mobile)
-    function unlockAudio() {
-        audio.muted = true;
-        audio.play().then(() => {
-            audio.pause();
-            audio.currentTime = 0;
-            audio.muted = false;
-        }).catch(()=>{});
-    }
-
-    document.addEventListener("touchstart", unlockAudio, { once: true });
-    document.addEventListener("click", unlockAudio, { once: true });
-
-    // 🎵 PLAY FUNCTION
-    function playMusic() {
-        audio.currentTime = 0;
-        audio.muted = false;
-
-        audio.play().then(()=>{
-            console.log("✅ Audio playing");
-        }).catch(err=>{
-            console.log("❌ Audio blocked:", err);
-        });
-    }
-
-    // ❤️ HEART CLICK ONLY
+    // ❤️ HEART CLICK ONLY → PLAY AUDIO
     function handleStart(x, y) {
         if (seed.hover(x, y) && !started) {
+
             started = true;
 
-            playMusic();
+            // 🎵 PLAY AUDIO
+            audio.currentTime = 0;
+
+            var playPromise = audio.play();
+
+            if (playPromise !== undefined) {
+                playPromise.catch(function(error) {
+                    console.log("Audio failed:", error);
+                });
+            }
 
             hold = 0;
 
             canvas.off("click");
             canvas.off("mousemove");
-            canvas.removeClass('hand');
         }
     }
 
-    // DESKTOP
+    // DESKTOP CLICK
     canvas.on("click", function(e) {
         var offset = canvas.offset();
         var x = e.pageX - offset.left;
@@ -174,7 +140,7 @@
         handleStart(x, y);
     });
 
-    // MOBILE
+    // MOBILE TOUCH
     canvas.on("touchstart", function(e) {
         var offset = canvas.offset();
         var touch = e.originalEvent.touches[0];
@@ -184,9 +150,6 @@
 
         handleStart(x, y);
     });
-
-    // 🔊 FALLBACK BUTTON
-    document.getElementById("playBtn").onclick = playMusic;
 
     canvas.mousemove(function(e) {
         var offset = canvas.offset();
