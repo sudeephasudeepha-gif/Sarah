@@ -1,9 +1,8 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" 
-"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html lang="en">
 
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="UTF-8">
 <title>HBD Dr !</title>	    
 
 <link rel="stylesheet" href="./File/default.css">
@@ -18,6 +17,21 @@
 <script src="./File/functions.js"></script>
 <script src="./File/love.js"></script>
 
+<style>
+/* Optional: Play button (fallback) */
+#playBtn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: pink;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 20px;
+    font-size: 14px;
+    cursor: pointer;
+}
+</style>
+
 </head>
 
 <body>
@@ -25,10 +39,13 @@
 <div id="main">
     <div id="error">Use Chrome / Firefox </div>
 
-    <!-- 🔊 AUDIO (NO AUTOPLAY) -->
+    <!-- 🔊 AUDIO -->
     <audio id="myAudio" preload="auto" playsinline webkit-playsinline>
         <source src="./aud.mp3" type="audio/mpeg">
     </audio>
+
+    <!-- 🔊 FALLBACK BUTTON -->
+    <button id="playBtn">Play Music 🎵</button>
 
     <div id="wrap">
         <div id="text">
@@ -107,8 +124,9 @@
 
     var hold = 1;
     var audio = document.getElementById("myAudio");
+    var started = false;
 
-    // 🔥 MOBILE AUDIO UNLOCK
+    // 🔥 UNLOCK AUDIO (important for mobile)
     function unlockAudio() {
         audio.muted = true;
         audio.play().then(() => {
@@ -121,14 +139,24 @@
     document.addEventListener("touchstart", unlockAudio, { once: true });
     document.addEventListener("click", unlockAudio, { once: true });
 
-    // ❤️ CLICK ONLY ON HEART
-    function handleStart(x, y) {
-        if (seed.hover(x, y)) {
+    // 🎵 PLAY FUNCTION
+    function playMusic() {
+        audio.currentTime = 0;
+        audio.muted = false;
 
-            // 🎵 PLAY SOUND
-            audio.currentTime = 0;
-            audio.muted = false;
-            audio.play().catch(()=>{});
+        audio.play().then(()=>{
+            console.log("✅ Audio playing");
+        }).catch(err=>{
+            console.log("❌ Audio blocked:", err);
+        });
+    }
+
+    // ❤️ HEART CLICK ONLY
+    function handleStart(x, y) {
+        if (seed.hover(x, y) && !started) {
+            started = true;
+
+            playMusic();
 
             hold = 0;
 
@@ -156,6 +184,9 @@
 
         handleStart(x, y);
     });
+
+    // 🔊 FALLBACK BUTTON
+    document.getElementById("playBtn").onclick = playMusic;
 
     canvas.mousemove(function(e) {
         var offset = canvas.offset();
