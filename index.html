@@ -1,34 +1,41 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
+
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>HBD Dr !</title>	    
-    <link type="text/css" rel="stylesheet" href="./File/default.css">
-    <script type="text/javascript" src="./File/jquery.min.js"></script>
-    <script type="text/javascript" src="./File/jscex.min.js"></script>
-    <script type="text/javascript" src="./File/jscex-parser.js"></script>
-    <script type="text/javascript" src="./File/jscex-jit.js"></script>
-    <script type="text/javascript" src="./File/jscex-builderbase.min.js"></script>
-    <script type="text/javascript" src="./File/jscex-async.min.js"></script>
-    <script type="text/javascript" src="./File/jscex-async-powerpack.min.js"></script>
-    <script type="text/javascript" src="./File/functions.js" charset="utf-8"></script>
-    <script type="text/javascript" src="./File/love.js" charset="utf-8"></script>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>HBD Dr !</title>	    
+
+<link type="text/css" rel="stylesheet" href="./File/default.css">
+
+<script src="./File/jquery.min.js"></script>
+<script src="./File/jscex.min.js"></script>
+<script src="./File/jscex-parser.js"></script>
+<script src="./File/jscex-jit.js"></script>
+<script src="./File/jscex-builderbase.min.js"></script>
+<script src="./File/jscex-async.min.js"></script>
+<script src="./File/jscex-async-powerpack.min.js"></script>
+<script src="./File/functions.js"></script>
+<script src="./File/love.js"></script>
+
 </head>
 
 <body>
-<div id="main">
-    <div id="error"><a href="#">Use Chrome / Firefox / Brave</a></div>
 
-    <!-- ✅ MOBILE SAFE AUDIO -->
+<div id="main">
+    <div id="error">Use Chrome / Firefox / Brave</div>
+
+    <!-- 🔊 AUDIO (FIXED) -->
     <audio id="myAudio" preload="auto" playsinline>
-        <source src="aud.mp3" type="audio/mp3" />
+        <source src="./File/aud.mp3" type="audio/mpeg">
+        <source src="./File/aud.m4a" type="audio/mp4">
     </audio>
 
     <div id="wrap">
         <div id="text">
             <div id="code">
                 <span class="say">My dear Sarah 💞</span><br>
-                <span class="say">Happy Birthday to You🎈</span><br>
+                <span class="say">Happy Birthday to You 🎈</span><br>
                 <span class="say">God bless you 👐</span><br>
                 <span class="say">And give you lots of happiness 💞</span><br>
                 <span class="say">I hope you have a wonderful future ahead ❣️</span><br>
@@ -45,15 +52,17 @@
 
 <script>
 (function() {
+
     var canvas = $('#canvas');
 
     if (!canvas[0].getContext) {
         $("#error").show();
-        return false;
+        return;
     }
 
     var width = canvas.width();
-    var height = canvas.height();        
+    var height = canvas.height();
+
     canvas.attr("width", width);
     canvas.attr("height", height);
 
@@ -64,58 +73,71 @@
             scale: 2
         },
         branch: [
-            [535, 680, 570, 250, 500, 200, 30, 100, [
-                [540, 500, 455, 417, 340, 400, 13, 100, [
-                    [450, 435, 434, 430, 394, 395, 2, 40]
+            [535,680,570,250,500,200,30,100,[
+                [540,500,455,417,340,400,13,100,[
+                    [450,435,434,430,394,395,2,40]
                 ]],
-                [550, 445, 600, 356, 680, 345, 12, 100, [
-                    [578, 400, 648, 409, 661, 426, 3, 80]
+                [550,445,600,356,680,345,12,100,[
+                    [578,400,648,409,661,426,3,80]
                 ]],
-                [539, 281, 537, 248, 534, 217, 3, 40],
-                [546, 397, 413, 247, 328, 244, 9, 80, [
-                    [427, 286, 383, 253, 371, 205, 2, 40],
-                    [498, 345, 435, 315, 395, 330, 4, 60]
+                [539,281,537,248,534,217,3,40],
+                [546,397,413,247,328,244,9,80,[
+                    [427,286,383,253,371,205,2,40],
+                    [498,345,435,315,395,330,4,60]
                 ]],
-                [546, 357, 608, 252, 678, 221, 6, 100, [
-                    [590, 293, 646, 277, 648, 271, 2, 80]
+                [546,357,608,252,678,221,6,100,[
+                    [590,293,646,277,648,271,2,80]
                 ]]
-            ]] 
+            ]]
         ],
         bloom: {
             num: 700,
             width: 1080,
-            height: 650,
+            height: 650
         },
         footer: {
             width: 1200,
             height: 5,
-            speed: 10,
+            speed: 10
         }
     };
 
     var tree = new Tree(canvas[0], width, height, opts);
     var seed = tree.seed;
     var foot = tree.footer;
+
     var hold = 1;
-
     var audio = document.getElementById("myAudio");
-    var started = false; // ✅ ensures single trigger
+    var started = false;
 
-    // ✅ COMMON FUNCTION
+    // 🔥 UNLOCK AUDIO (MOBILE FIX)
+    function unlockAudio() {
+        audio.play().then(() => {
+            audio.pause();
+            audio.currentTime = 0;
+        }).catch(()=>{});
+    }
+
+    document.body.addEventListener("touchstart", unlockAudio, { once: true });
+    document.body.addEventListener("click", unlockAudio, { once: true });
+
+    // ❤️ HANDLE HEART CLICK
     function handleStart(x, y) {
         if (seed.hover(x, y) && !started) {
             started = true;
 
-            // 🔥 mobile-safe play
             audio.currentTime = 0;
-            audio.play().catch(() => {});
+            audio.volume = 1.0;
+            audio.muted = false;
+
+            audio.play().catch(()=>{});
 
             hold = 0;
             canvas.removeClass('hand');
         }
     }
 
-    // ✅ CLICK (desktop)
+    // DESKTOP
     canvas.on("click", function(e) {
         var offset = canvas.offset();
         var x = e.pageX - offset.left;
@@ -123,7 +145,7 @@
         handleStart(x, y);
     });
 
-    // ✅ TOUCH (mobile)
+    // MOBILE
     canvas.on("touchstart", function(e) {
         var offset = canvas.offset();
         var touch = e.originalEvent.touches[0];
@@ -135,9 +157,9 @@
     });
 
     canvas.mousemove(function(e) {
-        var offset = canvas.offset(), x, y;
-        x = e.pageX - offset.left;
-        y = e.pageY - offset.top;
+        var offset = canvas.offset();
+        var x = e.pageX - offset.left;
+        var y = e.pageY - offset.top;
         canvas.toggleClass('hand', seed.hover(x, y));
     });
 
@@ -199,7 +221,9 @@
     }));
 
     runAsync().start();
+
 })();
 </script>
+
 </body>
 </html>
