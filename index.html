@@ -1,3 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<title>HBD Dr !</title>	    
+
+<link rel="stylesheet" href="./File/default.css">
+
+<script src="./File/jquery.min.js"></script>
+<script src="./File/jscex.min.js"></script>
+<script src="./File/jscex-parser.js"></script>
+<script src="./File/jscex-jit.js"></script>
+<script src="./File/jscex-builderbase.min.js"></script>
+<script src="./File/jscex-async.min.js"></script>
+<script src="./File/jscex-async-powerpack.min.js"></script>
+<script src="./File/functions.js"></script>
+<script src="./File/love.js"></script>
+
+</head>
+
+<body>
+
+<div id="main">
+    <div id="error">Use Chrome / Firefox / Brave </div>
+
+    <!-- 🔊 AUDIO -->
+<audio id="myAudio" preload="auto" playsinline>
+    <source src="./aud.mp3" type="audio/mpeg">
+</audio>
+    <div id="wrap">
+        <div id="text">
+            <div id="code">
+                <span class="say">My dear Sarah 💞</span><br>
+                <span class="say">Happy Birthday to You 🎈</span><br>
+                <span class="say">God bless you 👐</span><br>
+                <span class="say">And give you lots of happiness 💞</span><br>
+                <span class="say">I hope you have a wonderful future ahead ❣️</span><br>
+            </div>
+        </div>
+
+        <div id="clock-box">
+            <span id="clock">577 days 0 hours 0 minutes 0 seconds</span>
+        </div>
+
+        <canvas id="canvas" width="1100" height="680"></canvas>
+    </div>
+</div>
+
 <script>
 (function() {
 
@@ -58,71 +107,56 @@
     var audio = document.getElementById("myAudio");
     var started = false;
 
-    // 🎵 PLAY AUDIO FUNCTION (SAFE)
-    function playMusic() {
-        if (started) return;
-
-        started = true;
-
-        audio.currentTime = 0;
-        audio.volume = 1;
-
-        var promise = audio.play();
-
-        if (promise !== undefined) {
-            promise.then(function() {
-                console.log("✅ Audio playing");
-            }).catch(function(err) {
-                console.log("❌ Audio error:", err);
-            });
-        }
-    }
-
-    // ❤️ HANDLE HEART CLICK
+    // ❤️ HEART CLICK ONLY → PLAY AUDIO
     function handleStart(x, y) {
-        if (seed.hover(x, y)) {
+        if (seed.hover(x, y) && !started) {
 
-            playMusic();   // 🔥 PLAY HERE
+            started = true;
+
+            // 🎵 PLAY AUDIO
+            audio.currentTime = 0;
+
+            var playPromise = audio.play();
+
+            if (playPromise !== undefined) {
+                playPromise.catch(function(error) {
+                    console.log("Audio failed:", error);
+                });
+            }
 
             hold = 0;
 
             canvas.off("click");
-            canvas.off("touchstart");
             canvas.off("mousemove");
-            canvas.removeClass('hand');
         }
     }
 
-    // 🖱 DESKTOP CLICK
+    // DESKTOP CLICK
     canvas.on("click", function(e) {
-        var rect = canvas[0].getBoundingClientRect();
-
-        var x = e.clientX - rect.left;
-        var y = e.clientY - rect.top;
-
+        var offset = canvas.offset();
+        var x = e.pageX - offset.left;
+        var y = e.pageY - offset.top;
         handleStart(x, y);
     });
 
-    // 📱 MOBILE TOUCH (FIXED)
-    canvas.on("touchstart", function(e) {
-        e.preventDefault(); // 🔥 VERY IMPORTANT
+    // MOBILE TOUCH
+// MOBILE TOUCH (FIXED)
+canvas.on("touchstart", function(e) {
+    e.preventDefault(); // 🔥 VERY IMPORTANT (prevents blocking)
 
-        var rect = canvas[0].getBoundingClientRect();
-        var touch = e.originalEvent.touches[0];
+    var rect = canvas[0].getBoundingClientRect();
+    var touch = e.originalEvent.touches[0];
 
-        var x = touch.clientX - rect.left;
-        var y = touch.clientY - rect.top;
+    var x = touch.clientX - rect.left;
+    var y = touch.clientY - rect.top;
 
-        handleStart(x, y);
-    });
+    handleStart(x, y);
+});
 
-    // 🖱 HOVER EFFECT
     canvas.mousemove(function(e) {
-        var rect = canvas[0].getBoundingClientRect();
-
-        var x = e.clientX - rect.left;
-        var y = e.clientY - rect.top;
-
+        var offset = canvas.offset();
+        var x = e.pageX - offset.left;
+        var y = e.pageY - offset.top;
         canvas.toggleClass('hand', seed.hover(x, y));
     });
 
@@ -187,3 +221,6 @@
 
 })();
 </script>
+
+</body>
+</html>Its not workin in phone
