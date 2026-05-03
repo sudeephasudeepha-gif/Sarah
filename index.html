@@ -6,7 +6,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>HBD Dr !</title>	    
 
-<link type="text/css" rel="stylesheet" href="./File/default.css">
+<link rel="stylesheet" href="./File/default.css">
 
 <script src="./File/jquery.min.js"></script>
 <script src="./File/jscex.min.js"></script>
@@ -25,8 +25,8 @@
 <div id="main">
     <div id="error">Use Chrome / Firefox / Brave</div>
 
-    <!-- 🔊 AUDIO (FIXED) -->
-    <audio id="myAudio" preload="auto" playsinline>
+    <!-- 🔊 AUDIO (FINAL FIX) -->
+    <audio id="myAudio" preload="auto" playsinline webkit-playsinline>
         <source src="aud.mp3" type="audio/mpeg">
     </audio>
 
@@ -109,27 +109,31 @@
     var audio = document.getElementById("myAudio");
     var started = false;
 
-    // 🔥 UNLOCK AUDIO (MOBILE FIX)
+    // 🔥 MOBILE AUDIO UNLOCK
     function unlockAudio() {
+        audio.muted = true;
         audio.play().then(() => {
             audio.pause();
             audio.currentTime = 0;
+            audio.muted = false;
         }).catch(()=>{});
     }
 
-    document.body.addEventListener("touchstart", unlockAudio, { once: true });
-    document.body.addEventListener("click", unlockAudio, { once: true });
+    document.addEventListener("touchstart", unlockAudio, { once: true });
+    document.addEventListener("click", unlockAudio, { once: true });
 
-    // ❤️ HANDLE HEART CLICK
+    // ❤️ PLAY ONLY WHEN HEART CLICKED
     function handleStart(x, y) {
         if (seed.hover(x, y) && !started) {
             started = true;
 
             audio.currentTime = 0;
-            audio.volume = 1.0;
             audio.muted = false;
+            audio.volume = 1.0;
 
-            audio.play().catch(()=>{});
+            audio.play().catch(err => {
+                console.log("Audio error:", err);
+            });
 
             hold = 0;
             canvas.removeClass('hand');
