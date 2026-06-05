@@ -6,7 +6,8 @@
 }
 
 /* BODY (BLACK BACKGROUND FOR TOP & BOTTOM SPACE) */
-html, body {
+html,
+body {
     height: 100%;
     background: black;
     overflow: hidden;
@@ -14,26 +15,20 @@ html, body {
     color: white;
 }
 
-/* CENTER CONTAINER */
+/* CENTER CONTAINER (4:3 ASPECT RATIO) */
 #wrap {
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
 
-    width: 100%;
-    max-width: 900px;
-    aspect-ratio: 4/3;
-
-    background-image: url('../img2.png');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+    width: min(90vw, calc(90vh * 4 / 3));
+    aspect-ratio: 4 / 3;
 
     overflow: hidden;
 }
 
-/* CANVAS (IMPORTANT FIX) */
+/* CANVAS */
 #canvas {
     width: 100%;
     height: 100%;
@@ -44,11 +39,10 @@ html, body {
 #text {
     position: absolute;
     top: 15%;
-    left: 5%;           /* always left */
-    width: 40%;         /* adjust as needed */
-    text-align: left;   /* text aligned left */
-
-    transform: none;    /* remove centering */
+    left: 5%;
+    width: 40%;
+    text-align: left;
+    transform: none;
 }
 
 /* MESSAGE TEXT */
@@ -62,7 +56,7 @@ html, body {
     text-align: left;
 }
 
-/* CLOCK (RESPONSIVE POSITION) */
+/* CLOCK */
 #clock-box {
     position: absolute;
     top: 65%;
@@ -89,9 +83,31 @@ html, body {
     font-size: clamp(14px, 3vw, 24px);
 }
 
-/* ERROR (OPTIONAL) */
+/* ERROR */
 #error {
     text-align: center;
     margin-top: 50px;
     display: none;
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+    #text {
+        width: 80%;
+        left: 10%;
+        top: 10%;
+    }
+
+    #code {
+        font-size: clamp(14px, 4vw, 20px);
+        margin-top: 20px;
+    }
+
+    #clock-box {
+        top: 72%;
+    }
+
+    #message-box {
+        font-size: clamp(12px, 4vw, 18px);
+    }
 }
