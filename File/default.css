@@ -28,7 +28,10 @@ html,body{
   width:min(100vw, calc(100vh * 4 / 3));
   height:min(100vh, calc(100vw * 3 / 4));
 
-  background:url("../img2.png") center center/cover no-repeat;
+  background:url("../img2.png") ;
+  background-size: cover;
+  background-position: center; 
+  background-repeat: no-repeat;
 
   overflow:hidden;
 }
