@@ -185,14 +185,19 @@
         }
     }
 
-    Footer = function(tree, width, height, speed) {
-        this.tree = tree;
-        this.point = new Point(tree.seed.heart.point.x, tree.height - height / 2);
-        this.width = width;
-        this.height = height;
-        this.speed = speed || 2;
-        this.length = 0;
-    }
+Footer = function(tree, width, height, speed) {
+    this.tree = tree;
+
+    this.point = new Point(
+        tree.seed.heart.point.x,
+        tree.height - 80   // was tree.height - height / 2
+    );
+
+    this.width = width;
+    this.height = height;
+    this.speed = speed || 2;
+    this.length = 0;
+}
     Footer.prototype = {
         draw: function() {
             var ctx = this.tree.ctx, point = this.point;
