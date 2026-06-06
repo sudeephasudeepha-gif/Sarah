@@ -391,7 +391,8 @@
             var j = point.y + speed < y ? point.y + speed : y; 
 
             ctx.save();
-            ctx.clearRect(point.x, point.y, width, height);
+            // FIXED: Clears dynamically with canvas context properties to clean up duplicate trunks
+            ctx.clearRect(0, 0, s.width, s.height);
             ctx.putImageData(image, i, j);
             ctx.restore();
 
@@ -418,8 +419,8 @@
                     figure = this.seed.heart.figure;
                 var r = 240;
                 for (var j = 0; j < random(1,2); j++) {
-                    // FIXED spawn generation logic bounds:
-                    blooms.push(this.createBloom(width, height, r, figure, null, 1, null, 1, new Point(random(-100,600), 720), random(200,300)));
+                    // FIXED: Re-anchored falling bounds calculation to prevent the right-side clipping wall
+                    blooms.push(s.createBloom(width, height, r, figure, null, 1, null, 1, new Point(random(0, width), 720), random(200,300)));
                 }
             }
         }
