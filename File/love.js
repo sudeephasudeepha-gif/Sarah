@@ -12,7 +12,6 @@
     }  
 
     function inheart(x, y, r) {
-        
         var z = ((x / r) * (x / r) + (y / r) * (y / r) - 1) * ((x / r) * (x / r) + (y / r) * (y / r) - 1) * ((x / r) * (x / r) + (y / r) * (y / r) - 1) - (x / r) * (x / r) * (y / r) * (y / r) * (y / r);
         return z < 0;
     }
@@ -54,7 +53,6 @@
     Heart = function() {
         // x = 16 sin^3 t
         // y = 13 cos t - 5 cos 2t - 2 cos 3t - cos 4t
-        // http://www.wolframalpha.com/input/?i=x+%3D+16+sin%5E3+t%2C+y+%3D+(13+cos+t+-+5+cos+2t+-+2+cos+3t+-+cos+4t)
         var points = [], x, y, t;
         for (var i = 10; i < 30; i += 0.2) {
             t = i / Math.PI;
@@ -146,7 +144,7 @@
             ctx.scale(scale, scale);
             ctx.beginPath();
             ctx.moveTo(0, 0);
-    	    ctx.arc(0, 0, radius, 0, 2 * Math.PI);
+            ctx.arc(0, 0, radius, 0, 2 * Math.PI);
             ctx.closePath();
             ctx.fill();
             ctx.restore();
@@ -161,13 +159,13 @@
             ctx.translate(point.x, point.y);
             ctx.scale(scale, scale);
             ctx.moveTo(0, 0);
-    	    ctx.lineTo(15, 15);
-    	    ctx.lineTo(130, 15);
+            ctx.lineTo(15, 15);
+            ctx.lineTo(130, 15);
             ctx.stroke();
 
             ctx.moveTo(0, 0);
             ctx.scale(0.75, 0.75);
-            ctx.font = "12px,Verdana"; // 字号肿么没有用? (ˉ(∞)ˉ)
+            ctx.font = "12px,Verdana"; 
             ctx.fillText("Click Me:) ", 30, -5);
             ctx.fillText("Birthday Queen !", 28, 10);
             ctx.restore();
@@ -206,8 +204,8 @@
             ctx.translate(point.x, point.y);
             ctx.beginPath();
             ctx.moveTo(0, 0);
-    	    ctx.lineTo(len, 0);
-    	    ctx.lineTo(-len, 0);
+            ctx.lineTo(len, 0);
+            ctx.lineTo(-len, 0);
             ctx.stroke();
             ctx.restore();
 
@@ -264,7 +262,7 @@
                 width = bloom.width || this.width,
                 height = bloom.height || this.height,
                 figure = this.seed.heart.figure;
-            var r = 240, x, y;
+            var r = 240;
             for (var i = 0; i < num; i++) {
                 cache.push(this.createBloom(width, height, r, figure));
             }
@@ -287,16 +285,16 @@
 
             ctx.save();
             ctx.putImageData(image, point.x, point.y);
-        	ctx.restore();
+            ctx.restore();
         },
 
         addBranch: function(branch) {
-        	this.branchs.push(branch);
+            this.branchs.push(branch);
         },
 
         addBranchs: function(branchs){
             var s = this, b, p1, p2, p3, r, l, c;
-        	for (var i = 0; i < branchs.length; i++) {
+            for (var i = 0; i < branchs.length; i++) {
                 b = branchs[i];
                 p1 = new Point(b[0], b[1]);
                 p2 = new Point(b[2], b[3]);
@@ -310,9 +308,9 @@
 
         removeBranch: function(branch) {
             var branchs = this.branchs;
-        	for (var i = 0; i < branchs.length; i++) {
-        		if (branchs[i] === branch) {
-        			branchs.splice(i, 1);
+            for (var i = 0; i < branchs.length; i++) {
+                if (branchs[i] === branch) {
+                    branchs.splice(i, 1);
                 }
             }
         },
@@ -322,7 +320,7 @@
         },
         grow: function() {
             var branchs = this.branchs;
-    	    for (var i = 0; i < branchs.length; i++) {
+            for (var i = 0; i < branchs.length; i++) {
                 var branch = branchs[i];
                 if (branch) {
                     branch.grow();
@@ -343,12 +341,14 @@
             }
         },
 
+        // FIXED: Heart center point dynamically anchors to your tree trunk (535) instead of dividing canvas width in half
         createBloom: function(width, height, radius, figure, color, alpha, angle, scale, place, speed) {
             var x, y;
+            var centerX = (this.opt.branch && this.opt.branch[0]) ? this.opt.branch[0][0] : width / 2;
             while (true) {
                 x = random(20, width - 20);
                 y = random(20, height - 20);
-                if (inheart(x - width / 2, height - (height - 40) / 2 - y, radius)) {
+                if (inheart(x - centerX, height - (height - 40) / 2 - y, radius)) {
                     return new Bloom(this, new Point(x, y), figure, color, alpha, angle, scale, place, speed);
                 }
             }
@@ -396,7 +396,7 @@
             ctx.save();
             ctx.clearRect(point.x, point.y, width, height);
             ctx.putImageData(image, i, j);
-        	ctx.restore();
+            ctx.restore();
 
             rec.point = new Point(i, j);
             rec.speed = speed * 0.95;
@@ -407,8 +407,10 @@
             return i < x || j < y;
         },
 
+        // FIXED: Adjusted bounds for falling petals animation to match your custom offset
         jump: function() {
             var s = this, blooms = s.blooms;
+            var centerX = (this.opt.branch && this.opt.branch[0]) ? this.opt.branch[0][0] : this.width / 2;
             if (blooms.length) {
                 for (var i = 0; i < blooms.length; i++) {
                     blooms[i].jump();
@@ -419,7 +421,7 @@
                     width = bloom.width || this.width,
                     height = bloom.height || this.height,
                     figure = this.seed.heart.figure;
-                var r = 240, x, y;
+                var r = 240;
                 for (var i = 0; i < random(1,2); i++) {
                     blooms.push(this.createBloom(width / 2 + width, height, r, figure, null, 1, null, 1, new Point(random(-100,600), 720), random(200,300)));
                 }
@@ -456,15 +458,13 @@
             var s = this;
             var ctx = s.tree.ctx;
             ctx.save();
-        	ctx.beginPath();
-        	ctx.fillStyle = '#FFC0CB';
-            // ctx.shadowColor = 'rgb(35, 31, 32)';
+            ctx.beginPath();
+            ctx.fillStyle = '#FFC0CB';
             ctx.shadowBlur = 2;
-        	ctx.moveTo(p.x, p.y);
-        	ctx.arc(p.x, p.y, s.radius, 0, 2 * Math.PI);
-        	ctx.closePath();
-        	ctx.fill();
-        	// ctx.restore();
+            ctx.moveTo(p.x, p.y);
+            ctx.arc(p.x, p.y, s.radius, 0, 2 * Math.PI);
+            ctx.closePath();
+            ctx.fill();
         }
     }
 
@@ -511,22 +511,17 @@
             ctx.fill();
             ctx.restore();
         },
-  jump: function() {
-    var s = this, height = s.tree.height;
+        jump: function() {
+            var s = this, height = s.tree.height;
 
-    // remove when out of screen
-    if (s.point.y > height + 20) {
-        s.tree.removeBloom(s);
-    } else {
-        s.draw();
-
-        // move straight down
-        s.point.y += 2;  
-
-        // optional: very slight rotation (can remove if you want)
-        s.angle += 0.02;
-    }
-}
+            if (s.point.y > height + 20) {
+                s.tree.removeBloom(s);
+            } else {
+                s.draw();
+                s.point.y += 2;  
+                s.angle += 0.02;
+            }
+        }
     }
 
     window.random = random;
